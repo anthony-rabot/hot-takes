@@ -1,0 +1,24 @@
+{
+  "name": "hot-takes",
+  "version": "1.0.0",
+  "description": "Projet 6 - Hot Takes - OpenClassrooms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anthony-rabot/hot-takes.git"
+  },
+  "keywords": [
+    "OpenClassrooms",
+    "Hot Takes",
+    "P6"
+  ],
+  "author": "Anthony Rabot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anthony-rabot/hot-takes/issues"
+  },
+  "homepage": "https://github.com/anthony-rabot/hot-takes#readme"
+}
