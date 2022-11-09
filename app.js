@@ -1,7 +1,8 @@
-const express = require('express')
+require('dotenv').config()
 const mongoose = require('mongoose')
+const express = require('express')
 
-mongoose.connect('mongodb://127.0.0.1:49154', {
+mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
