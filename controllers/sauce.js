@@ -18,7 +18,7 @@ exports.createSauce = (req, res, next) => {
     })
 
     sauce.save()
-        .then(() => { res.status(201).json({message: 'Sauce enregistrée !'})})
+        .then(() => { res.status(201).json({message: 'Sauce added'})})
         .catch(error => { res.status(400).json( { error })})
 }
 
@@ -43,11 +43,11 @@ exports.modifySauce = (req, res, next) => {
     delete sauceObject._userId
     Sauce.findOne({_id: req.params.id})
         .then((sauce) => {
-            if (sauce.userId != req.auth.userId) {
-                res.status(401).json({ message : "Vous n'êtes pas autorisé à modifier cette sauce"})
+            if (sauce.userId !== req.auth.userId) {
+                res.status(401).json({ message : "You aren't authorized to modify this sauce"})
             } else {
                 Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
-                    .then(() => res.status(200).json({message : 'Sauce modifiée'}))
+                    .then(() => res.status(200).json({message : 'Sauce modified'}))
                     .catch(error => res.status(401).json({ error }))
             }
         })
@@ -57,9 +57,21 @@ exports.modifySauce = (req, res, next) => {
 }
 
 exports.deleteSauce = (req, res, next) => {
-    Sauce.deleteOne({ _id: req.params.id })
-        .then(sauce => res.status(200).json({message: 'Sauce supprimée'}))
-        .catch(error => res.status(400).json({ error }))
+
+    Sauce.findOne({ _id: req.params.id})
+        .then(sauce => {
+            if (sauce.userId !== req.auth.userId) {
+                res.status(401).json({message: "You aren't authorized to modify this sauce"})
+            } else {
+                const filename = sauce.imageUrl.split('/images/')[1]
+                fs.unlink(`images/${filename}`, () => {
+                    Sauce.deleteOne({_id: req.params.id})
+                        .then(() => { res.status(200).json({message: 'Sauce deleted'})})
+                        .catch(error => res.status(401).json({ error }))
+                })
+            }
+        })
+        .catch( error => { res.status(500).json({ error })})
 }
 
 exports.likeSauce = (req, res, next) => {
@@ -73,7 +85,7 @@ exports.likeSauce = (req, res, next) => {
                         $inc: { likes: 1 },
                         $push: {usersLiked: req.auth.userId}
                     })
-                        .then(() => res.status(200).json({ message: "Sauce likée" }))
+                        .then(() => res.status(200).json({ message: "Sauce liked" }))
                         .catch((error) => res.status(400).json({ error }))
                 }
             })
@@ -87,7 +99,7 @@ exports.likeSauce = (req, res, next) => {
                         $inc: { dislikes: 1 },
                         $push: {usersDisliked: req.auth.userId}
                     })
-                        .then(() => res.status(200).json({ message: "Sauce dislikée" }))
+                        .then(() => res.status(200).json({ message: "Sauce unliked" }))
                         .catch((error) => res.status(400).json({ error }))
                 }
             })
@@ -101,14 +113,14 @@ exports.likeSauce = (req, res, next) => {
                         $inc: { likes: -1 },
                         $pull: {usersLiked: req.auth.userId}
                     })
-                        .then(() => res.status(200).json({ message: "User enlevé du tableau de likes" }))
+                        .then(() => res.status(200).json({ message: "User removed from liked users" }))
                         .catch((error) => res.status(400).json({ error }))
                 } else if (sauce.usersDisliked.includes(req.auth.userId)) {
                     Sauce.updateOne({ _id: req.params.id}, {
                         $inc: { dislikes: -1 },
                         $pull: {usersDisliked: req.auth.userId}
                     })
-                        .then(() => res.status(200).json({ message: "User enlevé du tableau de dislikes" }))
+                        .then(() => res.status(200).json({ message: "User removed from disliked users" }))
                         .catch((error) => res.status(400).json({ error }))
 
                 }
