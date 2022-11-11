@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const mongooseErrors = require('mongoose-errors')
 
+// https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/mongoose
 const Schema = mongoose.Schema
 
 const sauceSchema = new Schema({
