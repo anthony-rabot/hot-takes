@@ -3,6 +3,7 @@ const Sauce = require('../models/sauce')
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
 
+// Create Sauce with form field, init values for likes and unlikes and manage image
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce)
     delete sauceObject._id
@@ -22,18 +23,21 @@ exports.createSauce = (req, res, next) => {
         .catch(error => { res.status(400).json( { error })})
 }
 
+// Return all sauces
 exports.getSauces = (req, res, next) => {
     Sauce.find()
         .then(sauces => res.status(200).json(sauces))
         .catch(error => res.status(400).json({ error }))
 }
 
+// Return one sauce with id in request
 exports.getSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({ error }))
 }
 
+// Modify one sauce with id in request and manage image modification
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ? {
         ...JSON.parse(req.body.sauce),
@@ -56,6 +60,7 @@ exports.modifySauce = (req, res, next) => {
         })
 }
 
+// Delete one sauce datas and image
 exports.deleteSauce = (req, res, next) => {
 
     Sauce.findOne({ _id: req.params.id})
@@ -74,9 +79,10 @@ exports.deleteSauce = (req, res, next) => {
         .catch( error => { res.status(500).json({ error })})
 }
 
+// Manage likes and unlikes values depends on sauce and user values
 exports.likeSauce = (req, res, next) => {
-    // Likes
-    if (req.body.like === 1) {
+
+    if (req.body.like === 1) { // Likes
 
         Sauce.findOne({_id: req.params.id})
             .then((sauce) => {
@@ -90,7 +96,7 @@ exports.likeSauce = (req, res, next) => {
                 }
             })
             .catch((error) => res.status(400).json({ error }))
-    } else if (req.body.like === -1) {
+    } else if (req.body.like === -1) { // Dislikes
 
         Sauce.findOne({_id: req.params.id})
             .then((sauce) => {
@@ -104,8 +110,7 @@ exports.likeSauce = (req, res, next) => {
                 }
             })
             .catch((error) => res.status(400).json({ error }))
-    } else {
-        // req.body.likes et dislikes à 0
+    } else { // req.body.likes et dislikes à 0
         Sauce.findOne({_id: req.params.id})
             .then((sauce) => {
                 if (sauce.usersLiked.includes(req.auth.userId) ) {
