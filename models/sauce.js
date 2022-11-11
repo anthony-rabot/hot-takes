@@ -16,7 +16,7 @@ const sauceSchema = new Schema({
     dislikes: { type: Number, required: false },
     usersLiked: { type: Array, required: false },
     usersDisliked: { type: Array, required: false }
-});
+})
 
 sauceSchema.plugin(mongooseErrors)
 
