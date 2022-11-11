@@ -6,6 +6,7 @@ const path = require('path')
 // Security
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
+const mongoSanitize = require("express-mongo-sanitize")
 
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -46,6 +47,9 @@ app.disable('x-powered-by')
 
 // Limit number of request for same IP
 app.use(apiLimiter)
+
+// Prevent MongoDB from injection & Cross-Site scripting https://javascript.plainenglish.io/how-to-sanitize-your-express-app-against-mongodb-injection-cross-site-scripting-6a22f4e822aa
+app.use(mongoSanitize())
 
 // Routes
 app.use('/images', express.static(path.join(__dirname, 'images')))
