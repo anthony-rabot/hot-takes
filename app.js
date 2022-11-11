@@ -1,9 +1,22 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 const express = require('express')
+const path = require('path')
+
+// Security
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+
+// Routes
 const userRoutes = require('./routes/user')
 const sauceRoutes = require('./routes/sauce')
-const path = require('path')
 
 const app = express()
 
@@ -27,8 +40,15 @@ app.use((req, res, next) => {
 // Express Middleware to parse JSON request
 app.use(express.json())
 
+// Headers security
+app.use(helmet())
+app.disable('x-powered-by')
+
+// Limit number of request for same IP
+app.use(apiLimiter)
+
 // Routes
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use('/api/auth', userRoutes)
 app.use('/api', sauceRoutes)
 
