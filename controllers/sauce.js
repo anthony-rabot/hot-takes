@@ -120,14 +120,14 @@ exports.likeSauce = (req, res, next) => {
                     })
                         .then(() => res.status(200).json({ message: "User removed from liked users" }))
                         .catch((error) => res.status(400).json({ error }))
-                } else if (sauce.usersDisliked.includes(req.auth.userId)) {
+                }
+                if (sauce.usersDisliked.includes(req.auth.userId)) {
                     Sauce.updateOne({ _id: req.params.id}, {
                         $inc: { dislikes: -1 },
                         $pull: {usersDisliked: req.auth.userId}
                     })
                         .then(() => res.status(200).json({ message: "User removed from disliked users" }))
                         .catch((error) => res.status(400).json({ error }))
-
                 }
             })
             .catch((error) => res.status(400).json({ error }))

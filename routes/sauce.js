@@ -4,6 +4,7 @@ const router = express.Router()
 const auth = require('../middleware/auth')
 const multer = require('../middleware/multer-config')
 const sauceValidationRules = require("../middleware/sauce-validator")
+const likeValidationRules = require("../middleware/like-validator")
 
 const sauceController = require('../controllers/sauce')
 
@@ -13,6 +14,6 @@ router.get('/sauces', auth, sauceController.getSauces)
 router.get('/sauces/:id', auth, sauceController.getSauce)
 router.put('/sauces/:id', auth, multer, sauceValidationRules, sauceController.modifySauce)
 router.delete('/sauces/:id', auth, sauceController.deleteSauce)
-router.post('/sauces/:id/like', auth, sauceController.likeSauce)
+router.post('/sauces/:id/like', auth, likeValidationRules, sauceController.likeSauce)
 
 module.exports = router
