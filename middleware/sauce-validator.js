@@ -35,16 +35,31 @@ module.exports = (req, res, next) => {
         }
     }
 
-    // Il y a un objet sauce, une image et aucune erreur
+    // Test for file extension. If not valid, generate an error and delete file
+    if (req.file) {
+        const validExtensions = ['png', 'jpeg', 'jpg', 'webp']
+        const fileMime = req.file.mimetype
+        const fileExtension = fileMime.split('/')
+
+        if (!validExtensions.includes(fileExtension[1]) || fileExtension[1].length === 0) {
+            fs.unlink(`images/${req.file.filename}`, (error) => {
+                error ? console.log(error) : console.log('file deleted')
+            })
+            errorMessages.push("File extension not valid or missing")
+            return res.status(422).json({ success: false, errorMessages })
+        }
+    }
+
+    // If sauce object ok, image ok and no error
     if (req.body.sauce && req.file && !errorMessages.length ) {
         return next()
-    } else if ((!req.body.sauce || errorMessages.length ) && req.file) {
+    } else if ((!req.body.sauce || errorMessages.length ) && req.file) { // If no sauce object or error and image ok
         fs.unlink(`images/${req.file.filename}`, (error) => {
             error ? console.log(error) : console.log('file deleted')
         })
         errorMessages.push("Need correct sauce object to process it")
         return res.status(422).json({ success: false, errorMessages })
-    } else if (req.body.sauce && !req.file) {
+    } else if (req.body.sauce && !req.file) { // If sauce object ok but no image
         errorMessages.push("Need an image to process sauce")
         return res.status(422).json({ success: false, errorMessages })
     } else {
