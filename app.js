@@ -1,5 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
+const mongooseConnexion = require("./config/db");
 const express = require('express')
 const path = require('path')
 
@@ -11,12 +12,7 @@ const mongoSanitize = require("express-mongo-sanitize")
 const hpp = require('hpp')
 
 // MongoDB connexion
-mongoose.connect(process.env.MONGODB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(() => console.log('Connexion à MongoDB réussie !'))
-    .catch(() => console.log('Connexion à MongoDB échouée !'))
+mongooseConnexion(process.env.MONGODB_URL)
 
 // Routes
 const userRoutes = require('./routes/user')
