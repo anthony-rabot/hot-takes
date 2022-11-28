@@ -50,6 +50,14 @@ exports.modifySauce = (req, res, next) => {
             if (sauce.userId !== req.auth.userId) {
                 res.status(401).json({ message : "You aren't authorized to modify this sauce"})
             } else {
+
+                if (req.file) { // Delete old image if new one is uploaded
+                    const filename = sauce.imageUrl.split('/images/')[1]
+                    fs.unlink(`images/${filename}`, (error) => {
+                        error ? console.log(error) : console.log('file deleted')
+                    })
+                }
+
                 Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
                     .then(() => res.status(200).json({message : 'Sauce modified'}))
                     .catch(error => res.status(401).json({ error }))

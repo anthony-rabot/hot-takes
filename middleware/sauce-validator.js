@@ -70,7 +70,7 @@ module.exports = (req, res, next) => {
         }
     }
 
-    // Modification of Sauce (image not required)
+    // Update of Sauce (image not required)
     if (req.method === 'PUT') {
         if (!errorMessages.length ) {
             return next()
