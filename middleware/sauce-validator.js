@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
         sauceObject = req.body
     }
 
-    const authorisedValues = new RegExp('^[a-zA-ZÀ-ú0-9,\\-\'\\s]+$')
+    const authorisedValues = new RegExp('^[a-zA-ZÀ-ú0-9,.\\-\'\\s]+$')
 
     // Test of sauce name
     if (sauceObject.name && (sauceObject.name.length < 5 || !authorisedValues.test(sauceObject.name)) ) {
