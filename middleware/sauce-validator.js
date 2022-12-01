@@ -59,9 +59,11 @@ module.exports = (req, res, next) => {
         if (req.body.sauce && req.file && !errorMessages.length ) {
             return next()
         } else if (!req.body.sauce || errorMessages.length ) { // If no sauce object or with errors
-            fs.unlink(`images/${req.file.filename}`, (error) => {
-                error ? console.log(error) : console.log('file deleted')
-            })
+            if (req.file) {
+                fs.unlink(`images/${req.file.filename}`, (error) => {
+                    error ? console.log(error) : console.log('file deleted')
+                })
+            }
             errorMessages.push("Need correct sauce object to process it")
             return res.status(422).json({ success: false, errorMessages })
         } else if (req.body.sauce && !req.file) { // Sauce object ok but not image file
